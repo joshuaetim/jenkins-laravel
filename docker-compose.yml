@@ -1,0 +1,55 @@
+version: '3'
+
+services: 
+    php:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        image: jenkins-laravel
+        container_name: php
+        restart: unless-stopped
+        tty: true
+        environment: 
+            SERVICE_NAME: php
+            SERVICE_TAG: dev
+        networks: 
+            - app-network
+
+    #mysql
+    db:
+        image: mysql:5.7.22
+        container_name: db
+        restart: unless-stopped
+        tty: true
+        ports: 
+            - "3306:3306"
+        volumes: 
+            - dbdata:/var/lib/mysql
+        environment: 
+            MYSQL_DATABASE: laravel
+            MYSQL_ROOT_PASSWORD: password
+            SERVICE_NAME: mysql
+            SERVICE_TAG: dev
+        networks: 
+            - app-network
+
+    #jenkins
+    jenkins:
+        image: jenkins:2.257-centos7
+        container_name: jenkins
+        restart: unless-stopped
+        tty: true
+        volumes: 
+            - /var/run/docker.sock:/var/run/docker.sock
+        ports: 
+            - "8000:80"
+        networks: 
+            - app-network
+
+networks: 
+    app-network:
+        driver: bridge
+
+volumes: 
+    dbdata:
+        driver: local

@@ -2,6 +2,8 @@ FROM jenkins/jenkins:2.257-centos7
 
 FROM php:7.4-fpm
 
+USER root
+
 # Install dependencies
 RUN yum update && yum install -y \
     libzip-dev \
